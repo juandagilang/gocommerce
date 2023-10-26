@@ -1,23 +1,23 @@
 package main
 
 import (
+	"gocommerce/configs"
 	"gocommerce/handlers"
 	"gocommerce/middlewares"
 	"gocommerce/migrations"
-	"gocommerce/seeders"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db, err := InitDB()
+	db, err := configs.InitDB()
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
 	migrations.Migrate(db)
-	seeders.Seed(db)
+	// seeders.Seed(db)
 
 	router := gin.Default()
 
@@ -40,5 +40,5 @@ func main() {
 
 	router.POST("/login", handlers.Login(db))
 
-	router.Run(":8080")
+	router.Run(":5000")
 }

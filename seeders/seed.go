@@ -22,8 +22,8 @@ func Seed(db *gorm.DB) {
 	db.Create(&user2)
 
 	// Seeder untuk Products
-	product1 := models.Product{Name: "Product 1", CategoryID: category1.ID}
-	product2 := models.Product{Name: "Product 2", CategoryID: category2.ID}
+	product1 := models.Product{Name: "Product 1", CategoryID: 1}
+	product2 := models.Product{Name: "Product 2", CategoryID: 2}
 
 	db.Create(&product1)
 	db.Create(&product2)

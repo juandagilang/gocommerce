@@ -7,6 +7,9 @@ import (
 	"gocommerce/migrations"
 
 	"github.com/gin-gonic/gin"
+
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
@@ -40,6 +43,8 @@ func main() {
 
 	router.POST("/login", handlers.Login(db))
 	router.POST("/register", handlers.Register(db))
+
+	router.GET("/debug/pprof/*pprof", gin.WrapH(http.DefaultServeMux))
 
 	router.Run(":5000")
 }

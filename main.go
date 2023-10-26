@@ -39,6 +39,7 @@ func main() {
 	router.GET("/transactions/:id", handlers.GetTransactionWithItems(db))
 
 	router.POST("/login", handlers.Login(db))
+	router.POST("/register", handlers.Register(db))
 
 	router.Run(":5000")
 }

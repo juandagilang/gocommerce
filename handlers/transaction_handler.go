@@ -23,22 +23,51 @@ func GetTransactionWithItems(db *gorm.DB) gin.HandlerFunc {
 
 func CreateTransaction(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Mulai transaksi
+		tx := db.Begin()
+		if tx.Error != nil {
+			c.JSON(500, gin.H{"message": "Failed to start transaction"})
+			return
+		}
+
+		// Pastikan transaksi di-rollback jika terjadi panic
+		defer func() {
+			if r := recover(); r != nil {
+				tx.Rollback()
+			}
+		}()
+
 		var input models.Transaction
 		if err := c.ShouldBindJSON(&input); err != nil {
+			tx.Rollback()
 			c.JSON(400, gin.H{"message": "Invalid input"})
 			return
 		}
 
-		// Jika Anda ingin mengaitkan item transaksi, pastikan item-item tersebut ada dalam database
+		// Validasi setiap item untuk memastikan produk tersedia
 		for _, item := range input.Items {
 			var product models.Product
-			if err := db.First(&product, item.ProductID).Error; err != nil {
+			if err := tx.First(&product, item.ProductID).Error; err != nil {
+				tx.Rollback()
 				c.JSON(400, gin.H{"message": "Invalid product ID"})
 				return
 			}
 		}
 
-		db.Create(&input)
+		// Buat transaksi dan item-itemnya
+		if err := tx.Create(&input).Error; err != nil {
+			tx.Rollback()
+			c.JSON(500, gin.H{"message": "Failed to create transaction"})
+			return
+		}
+
+		// Commit jika semua operasi sukses
+		if err := tx.Commit().Error; err != nil {
+			tx.Rollback()
+			c.JSON(500, gin.H{"message": "Failed to commit transaction"})
+			return
+		}
+
 		c.JSON(201, input)
 	}
 }

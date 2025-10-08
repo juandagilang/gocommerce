@@ -8,37 +8,45 @@ import (
 
 func Seed(db *gorm.DB) {
 	// Seeder untuk Product Categories
-	category1 := models.ProductCategory{Name: "Category 1"}
-	category2 := models.ProductCategory{Name: "Category 2"}
+	electronics := models.ProductCategory{Name: "Electronics"}
+	fashion := models.ProductCategory{Name: "Fashion"}
+	home := models.ProductCategory{Name: "Home & Living"}
 
-	db.Create(&category1)
-	db.Create(&category2)
+	db.Create(&electronics)
+	db.Create(&fashion)
+	db.Create(&home)
 
 	// Seeder untuk Users
-	user1 := models.User{Username: "user1", Email: "user1@example.com", Password: "password1"}
-	user2 := models.User{Username: "user2", Email: "user2@example.com", Password: "password2"}
+	admin := models.User{Username: "admin", Email: "admin@gocommerce.com", Password: "admin123"}
+	john := models.User{Username: "john_doe", Email: "john@example.com", Password: "johnpass"}
+	jane := models.User{Username: "jane_doe", Email: "jane@example.com", Password: "janepass"}
 
-	db.Create(&user1)
-	db.Create(&user2)
+	db.Create(&admin)
+	db.Create(&john)
+	db.Create(&jane)
 
 	// Seeder untuk Products
-	product1 := models.Product{Name: "Product 1", CategoryID: 1}
-	product2 := models.Product{Name: "Product 2", CategoryID: 2}
+	tv := models.Product{Name: "Smart TV", CategoryID: electronics.ID, Price: 3500000, Stock: 10}
+	shirt := models.Product{Name: "T-Shirt", CategoryID: fashion.ID, Price: 75000, Stock: 50}
+	sofa := models.Product{Name: "Sofa", CategoryID: home.ID, Price: 1500000, Stock: 5}
 
-	db.Create(&product1)
-	db.Create(&product2)
+	db.Create(&tv)
+	db.Create(&shirt)
+	db.Create(&sofa)
 
 	// Seeder untuk Transactions
-	transaction1 := models.Transaction{UserID: user1.ID, Amount: 100.0}
-	transaction2 := models.Transaction{UserID: user2.ID, Amount: 200.0}
+	trans1 := models.Transaction{UserID: john.ID, Amount: tv.Price * 1}
+	trans2 := models.Transaction{UserID: jane.ID, Amount: shirt.Price*2 + sofa.Price*1}
 
-	db.Create(&transaction1)
-	db.Create(&transaction2)
+	db.Create(&trans1)
+	db.Create(&trans2)
 
 	// Seeder untuk Transaction Items
-	item1 := models.TransactionItem{TransactionID: transaction1.ID, ProductID: product1.ID, Quantity: 2}
-	item2 := models.TransactionItem{TransactionID: transaction2.ID, ProductID: product2.ID, Quantity: 3}
+	item1 := models.TransactionItem{TransactionID: trans1.ID, ProductID: tv.ID, Quantity: 1}
+	item2 := models.TransactionItem{TransactionID: trans2.ID, ProductID: shirt.ID, Quantity: 2}
+	item3 := models.TransactionItem{TransactionID: trans2.ID, ProductID: sofa.ID, Quantity: 1}
 
 	db.Create(&item1)
 	db.Create(&item2)
+	db.Create(&item3)
 }

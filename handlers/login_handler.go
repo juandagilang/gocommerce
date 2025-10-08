@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"gocommerce/helper"
 	"gocommerce/models"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -22,6 +24,10 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		// Pastikan untuk memeriksa kata sandi yang benar di sini
+		if err := helper.CheckPassword(input.Password, user.Password); err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid username or password"})
+			return
+		}
 
 		token, err := CreateToken(user.ID)
 		if err != nil {

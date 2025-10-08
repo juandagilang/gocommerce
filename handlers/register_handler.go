@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"gocommerce/helper"
 	"gocommerce/models"
 
 	"github.com/gin-gonic/gin"
@@ -22,10 +23,13 @@ func Register(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
+		hash, _ := helper.HashPassword(input.Password)
+
 		// Create the new user
 		newUser := models.User{
 			Username: input.Username,
-			Password: input.Password, // You should hash the password before storing it
+			Email:    input.Email,
+			Password: hash, // You should hash the password before storing it
 		}
 
 		if err := db.Create(&newUser).Error; err != nil {
